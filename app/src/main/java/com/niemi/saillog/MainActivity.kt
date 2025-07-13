@@ -34,6 +34,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.Firebase
 import com.niemi.saillog.data.Sailboat
+import com.niemi.saillog.ui.components.AutoRefreshingSailboatCard
 import com.niemi.saillog.ui.components.SailLogScaffold
 import com.niemi.saillog.ui.components.SailboatCard
 import com.niemi.saillog.ui.components.SailboatCardPreview
@@ -120,8 +121,9 @@ fun MainScreen(paddingValues: PaddingValues, viewModel: MainViewModel) {
             }
             selectedSailboat != null -> {
                 // Show selected sailboat
-                SailboatCard(
+                AutoRefreshingSailboatCard(
                     sailboat = selectedSailboat!!,
+                    onRefreshUrl = { viewModel.refreshSignedUrl(it) },
                     modifier = Modifier.padding(top = 16.dp),
                     onClick = {
                         // TODO: Navigate to sailboat selection screen
@@ -133,7 +135,9 @@ fun MainScreen(paddingValues: PaddingValues, viewModel: MainViewModel) {
                 SailboatCardWithPlaceholder(
                     sailboat = sampleSailboat,
                     modifier = Modifier.padding(top = 16.dp),
-                    onClick = { /* Handle click */ }
+                    onClick = {
+                        //TODO: navigate to add sailboat
+                    }
                 )
             }
 

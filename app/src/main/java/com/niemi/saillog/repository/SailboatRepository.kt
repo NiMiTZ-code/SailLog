@@ -3,12 +3,15 @@ package com.niemi.saillog.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.niemi.saillog.data.Sailboat
+import com.niemi.saillog.services.ImageUploadService
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
-class SailboatRepository {
+class SailboatRepository(
+    private val imageUploadService: ImageUploadService
+) {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
@@ -37,11 +40,14 @@ class SailboatRepository {
     // Get a specific sailboat
     suspend fun getSailboat(sailboatId: String): Sailboat? {
         return try {
-            firestore.collection("sailboats")
+            val sailboat = firestore.collection("sailboats")
                 .document(sailboatId)
                 .get()
                 .await()
                 .toObject(Sailboat::class.java)
+
+            // Get signed URL if image exists
+            sailboat?.let { getSailboatWithSignedUrl(it) }
         } catch (e: Exception) {
             null
         }
@@ -51,7 +57,10 @@ class SailboatRepository {
     suspend fun saveSailboat(sailboat: Sailboat): Boolean {
         return try {
             val userId = auth.currentUser?.uid ?: return false
-            val sailboatToSave = sailboat.copy(userId = userId)
+            val sailboatToSave = sailboat.copy(
+                userId = userId,
+                updatedAt = System.currentTimeMillis()
+            )
 
             if (sailboat.id.isEmpty()) {
                 // New sailboat
@@ -65,6 +74,39 @@ class SailboatRepository {
                     .set(sailboatToSave)
                     .await()
             }
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    // Get sailboat with fresh signed URL from Supabase
+    suspend fun getSailboatWithSignedUrl(sailboat: Sailboat): Sailboat {
+        return if (!sailboat.imageStoragePath.isNullOrEmpty()) {
+            val signedUrl = imageUploadService.getSignedImageUrl(sailboat.imageStoragePath) ?: ""
+            sailboat.copy(imageUrl = signedUrl)
+        } else {
+            sailboat
+        }
+    }
+
+    // Delete sailboat and its image
+    suspend fun deleteSailboat(sailboatId: String): Boolean {
+        return try {
+            // Get sailboat to check for image
+            val sailboat = getSailboat(sailboatId)
+
+            // Delete image from Supabase if exists
+            sailboat?.imageStoragePath?.let { path ->
+                imageUploadService.deleteImage(path)
+            }
+
+            // Delete from Firestore
+            firestore.collection("sailboats")
+                .document(sailboatId)
+                .delete()
+                .await()
+
             true
         } catch (e: Exception) {
             false

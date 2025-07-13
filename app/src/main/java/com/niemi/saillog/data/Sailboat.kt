@@ -8,5 +8,8 @@ data class Sailboat(
     val boatName: String = "My Sailboat", // Default
     val length: Double? = null,
     val year: Int? = null,
-    val manufacturer: String? = null
+    val manufacturer: String? = null,
+    val imageStoragePath: String? = null,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 )
