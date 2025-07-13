@@ -24,6 +24,8 @@ android {
 
 
         buildConfigField("String", "OPENWEATHER_API_KEY", "\"${properties.getProperty("OPENWEATHER_API_KEY", "")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${properties.getProperty("SUPABASE_ANON_KEY", "")}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${properties.getProperty("SUPABASE_URL", "")}\"")
     }
 
     buildTypes {
@@ -51,10 +53,14 @@ android {
 configurations {
     all {
         exclude(group = "com.intellij", module = "annotations")
+
     }
 }
 
 dependencies {
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.0"))
+    implementation("io.github.jan-tennert.supabase:storage-kt")
+    implementation("io.ktor:ktor-client-core-jvm:3.2.1")
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
