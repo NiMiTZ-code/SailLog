@@ -58,7 +58,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
-    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -87,4 +88,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
 }
