@@ -16,7 +16,7 @@ import kotlin.time.toDuration
 class ImageUploadService(private val context: Context) {
 
     companion object {
-        private const val BUCKET_NAME = "sailboat-images"
+        private const val BUCKET_NAME = "saillog-sailboat-imgs"
         private const val SIGNED_URL_EXPIRY = 3600 // 1 hour in seconds
     }
 
@@ -38,11 +38,13 @@ class ImageUploadService(private val context: Context) {
             val storagePath = "$userId/$fileName"
 
             // Upload to Supabase
-            SupabaseManager.client.storage
-                .from(BUCKET_NAME)
-                .upload(storagePath, bytes){
-                    upsert = false
-                }
+//            SupabaseManager.client.storage
+//                .from(BUCKET_NAME)
+//                .upload(storagePath, bytes){
+//                    upsert = false
+//                }
+            val bucket = SupabaseManager.client.storage.from(BUCKET_NAME)
+            bucket.upload(storagePath, bytes)
 
             // Return the storage path (not the URL)
             return@withContext storagePath

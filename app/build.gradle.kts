@@ -60,7 +60,7 @@ configurations {
 dependencies {
     implementation(platform("io.github.jan-tennert.supabase:bom:3.0.0"))
     implementation("io.github.jan-tennert.supabase:storage-kt")
-    implementation("io.ktor:ktor-client-core-jvm:3.2.1")
+    implementation("io.ktor:ktor-client-android:3.2.1")
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(platform("com.google.firebase:firebase-bom:33.16.0"))

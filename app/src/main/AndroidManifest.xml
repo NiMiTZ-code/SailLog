@@ -17,6 +17,11 @@
         android:theme="@style/Theme.SailLog"
         tools:targetApi="31">
         <activity
+            android:name=".AddSailboatActivity"
+            android:exported="false"
+            android:label="@string/title_activity_add_sailboat"
+            android:theme="@style/Theme.SailLog" />
+        <activity
             android:name=".SignUpActivity"
             android:exported="false"
             android:label="@string/title_activity_sign_up"

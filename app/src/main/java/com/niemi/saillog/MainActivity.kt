@@ -60,10 +60,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             SailLogTheme {
                 SailLogScaffold(onSignOut = { signOut() }) {
-                    MainScreen(it, viewModel = viewModel)
+                    MainScreen(it,
+                        viewModel = viewModel,
+                        onAddSailboat = { navigateToAddSailboat() }
+                    )
                 }
             }
         }
+    }
+    private fun navigateToAddSailboat() {
+        startActivity(Intent(this, AddSailboatActivity::class.java))
     }
 
     override fun onStart() {
@@ -85,7 +91,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(paddingValues: PaddingValues, viewModel: MainViewModel) {
+fun MainScreen(paddingValues: PaddingValues,
+               viewModel: MainViewModel,
+               onAddSailboat: () -> Unit
+) {
 
     val isLoading by viewModel.isLoading.collectAsState()
     val selectedSailboat by viewModel.selectedSailboat.collectAsState()
@@ -135,9 +144,7 @@ fun MainScreen(paddingValues: PaddingValues, viewModel: MainViewModel) {
                 SailboatCardWithPlaceholder(
                     sailboat = sampleSailboat,
                     modifier = Modifier.padding(top = 16.dp),
-                    onClick = {
-                        //TODO: navigate to add sailboat
-                    }
+                    onClick = onAddSailboat
                 )
             }
 
