@@ -12,4 +12,6 @@
     <string name="title_activity_sign_in">SignInActivity</string>
     <string name="title_activity_sign_up">SignUpActivity</string>
     <string name="title_activity_add_sailboat">AddSailboatActivity</string>
+    <string name="title_activity_maintenance_list">MaintenanceListActivity</string>
+    <string name="title_activity_add_maintenance">AddMaintenanceActivity</string>
 </resources>

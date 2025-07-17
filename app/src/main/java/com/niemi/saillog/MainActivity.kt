@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
@@ -34,7 +36,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.Firebase
 import com.niemi.saillog.data.Sailboat
+import com.niemi.saillog.AddMaintenanceActivity
 import com.niemi.saillog.ui.components.AutoRefreshingSailboatCard
+import com.niemi.saillog.ui.components.MaintenancePreviewCard
 import com.niemi.saillog.ui.components.SailLogScaffold
 import com.niemi.saillog.ui.components.SailboatCard
 import com.niemi.saillog.ui.components.SailboatCardPreview
@@ -59,17 +63,61 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SailLogTheme {
-                SailLogScaffold(onSignOut = { signOut() }) {
-                    MainScreen(it,
-                        viewModel = viewModel,
-                        onAddSailboat = { navigateToAddSailboat() }
-                    )
+                val selectedSailboat by viewModel.selectedSailboat.collectAsState()
+
+                Scaffold(
+                    floatingActionButton = {
+                        selectedSailboat?.let {
+                            FloatingActionButton(
+                                onClick = { navigateToAddMaintenance(it.id) },
+                                containerColor = MaterialTheme.colorScheme.primary
+                            ) {
+                                Icon(
+                                    Icons.Default.Build,
+                                    contentDescription = "Add maintenance"
+                                )
+                            }
+                        }
+                    }
+                ) { scaffoldPadding ->
+                    SailLogScaffold(
+                        onSignOut = { signOut() },
+                        onNavigateToMaintenance = {
+                            selectedSailboat?.let { navigateToMaintenanceList(it.id) }
+                        }
+                    ) { innerPadding ->
+                        MainScreen(
+                            paddingValues = PaddingValues(
+                                top = innerPadding.calculateTopPadding(),
+                                bottom = scaffoldPadding.calculateBottomPadding()
+                            ),
+                            viewModel = viewModel,
+                            onAddSailboat = { navigateToAddSailboat() },
+                            onAddMaintenance = {
+                                selectedSailboat?.let { navigateToAddMaintenance(it.id) }
+                            },
+                            onViewAllMaintenance = {
+                                selectedSailboat?.let { navigateToMaintenanceList(it.id) }
+                            }
+                        )
+                    }
                 }
             }
         }
     }
     private fun navigateToAddSailboat() {
         startActivity(Intent(this, AddSailboatActivity::class.java))
+    }
+    private fun navigateToAddMaintenance(sailboatId: String) {
+        startActivity(Intent(this, AddMaintenanceActivity::class.java).apply {
+            putExtra("SAILBOAT_ID", sailboatId)
+        })
+    }
+
+    private fun navigateToMaintenanceList(sailboatId: String) {
+        startActivity(Intent(this, MaintenanceListActivity::class.java).apply {
+            putExtra("SAILBOAT_ID", sailboatId)
+        })
     }
 
     override fun onStart() {
@@ -93,12 +141,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(paddingValues: PaddingValues,
                viewModel: MainViewModel,
-               onAddSailboat: () -> Unit
+               onAddSailboat: () -> Unit,
+               onAddMaintenance: () -> Unit,
+               onViewAllMaintenance: () -> Unit
+
 ) {
 
     val isLoading by viewModel.isLoading.collectAsState()
     val selectedSailboat by viewModel.selectedSailboat.collectAsState()
     val sailboats by viewModel.sailboats.collectAsState()
+    val maintenanceList by viewModel.maintenanceList.collectAsState()
 
     //SAMPLE - when no boats added yet
     val sampleSailboat = remember {
@@ -157,6 +209,15 @@ fun MainScreen(paddingValues: PaddingValues,
                 .weight(1f)
         ) {
             WeatherScreen()
+        }
+
+        selectedSailboat?.let {
+            MaintenancePreviewCard(
+                maintenanceList = maintenanceList,
+                onAddClick = onAddMaintenance,
+                onViewAllClick = onViewAllMaintenance,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
         }
     }
 }

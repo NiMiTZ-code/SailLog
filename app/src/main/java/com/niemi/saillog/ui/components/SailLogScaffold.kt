@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 fun SailLogScaffold(
     modifier: Modifier = Modifier,
     onSignOut: (() -> Unit)? = null,
+    onNavigateToMaintenance: (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
 
 ) {
@@ -45,11 +47,12 @@ fun SailLogScaffold(
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
                 NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Build, contentDescription = "Maintenance") },
                     label = { Text("Maintenance") },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
-                        // TODO: Navigate to Maintenance
+                        onNavigateToMaintenance?.invoke()
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
