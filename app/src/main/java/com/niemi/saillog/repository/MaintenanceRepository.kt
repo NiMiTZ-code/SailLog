@@ -27,6 +27,12 @@ class MaintenanceRepository {
     }
 
     fun getMaintenanceForSailboat(sailboatId: String, limit: Int? = null): Flow<List<Maintenance>> = callbackFlow {
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            close(Exception("User not logged in"))
+            return@callbackFlow
+        }
+
         val query = maintenanceCollection
             .whereEqualTo("sailboatId", sailboatId)
             .whereEqualTo("userId", auth.currentUser?.uid)
@@ -40,7 +46,7 @@ class MaintenanceRepository {
             }
 
             val maintenanceList = snapshot?.documents?.mapNotNull { doc ->
-                doc.toObject(Maintenance::class.java)
+                doc.toObject(Maintenance::class.java)?.copy(id = doc.id)
             } ?: emptyList()
 
             trySend(maintenanceList)

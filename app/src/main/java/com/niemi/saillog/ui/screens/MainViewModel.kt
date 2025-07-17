@@ -8,6 +8,7 @@ import com.niemi.saillog.data.Sailboat
 import com.niemi.saillog.repository.MaintenanceRepository
 import com.niemi.saillog.repository.SailboatRepository
 import com.niemi.saillog.services.ImageUploadService
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +32,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+
     init {
         loadSailboats()
         observeSelectedSailboat()
@@ -48,8 +50,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun loadMaintenanceForSailboat(sailboatId: String) {
-        viewModelScope.launch {
+    private fun loadMaintenanceForSailboat(sailboatId: String): Job {
+        return viewModelScope.launch {
             try {
                 maintenanceRepository.getMaintenanceForSailboat(sailboatId, limit = 3)
                     .collect { maintenanceList ->
@@ -116,4 +118,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+    fun refreshMaintenance() {
+        _selectedSailboat.value?.let { sailboat ->
+            loadMaintenanceForSailboat(sailboat.id)
+        }
+    }
+
 }

@@ -37,15 +37,16 @@ fun SailLogScaffold(
                 HorizontalDivider()
 
                 // Navigation items
-                NavigationDrawerItem(
-                    label = { Text("Logbook") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        // TODO: Navigate to Logbook
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                )
+                //TODO: FUTURE drawer items
+//                NavigationDrawerItem(
+//                    label = { Text("Logbook") },
+//                    selected = false,
+//                    onClick = {
+//                        scope.launch { drawerState.close() }
+//                        // TODO: Navigate to Logbook
+//                    },
+//                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+//                )
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Build, contentDescription = "Maintenance") },
                     label = { Text("Maintenance") },

@@ -132,6 +132,11 @@ class MainActivity : ComponentActivity() {
             finish()
         }
     }
+    override fun onResume() {
+        super.onResume()
+        // Refresh maintenance data when returning to this activity
+        viewModel.refreshMaintenance()
+    }
 
     private fun signOut() {
         auth.signOut()
