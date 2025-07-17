@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ExitToApp
@@ -163,61 +165,67 @@ fun MainScreen(paddingValues: PaddingValues,
         )
     }
 
-    Column(
+    LazyColumn (
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
+            .padding(paddingValues),
+            contentPadding = PaddingValues(bottom = 80.dp)
     ) {
-        when {
-            isLoading -> {
-                // Loading state
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            selectedSailboat != null -> {
-                // Show selected sailboat
-                AutoRefreshingSailboatCard(
-                    sailboat = selectedSailboat!!,
-                    onRefreshUrl = { viewModel.refreshSignedUrl(it) },
-                    modifier = Modifier.padding(top = 16.dp),
-                    onClick = {
-                        // TODO: Navigate to sailboat selection screen
+        item {
+            when {
+                isLoading -> {
+                    // Loading state
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
+                }
+
+                selectedSailboat != null -> {
+                    // Show selected sailboat
+                    AutoRefreshingSailboatCard(
+                        sailboat = selectedSailboat!!,
+                        onRefreshUrl = { viewModel.refreshSignedUrl(it) },
+                        modifier = Modifier.padding(top = 16.dp),
+                        onClick = {
+                            // TODO: Navigate to sailboat selection screen
+                        }
+                    )
+                }
+
+                sailboats.isEmpty() -> {
+                    // No sailboats yet
+                    SailboatCardWithPlaceholder(
+                        sailboat = sampleSailboat,
+                        modifier = Modifier.padding(top = 16.dp),
+                        onClick = onAddSailboat
+                    )
+                }
+
+            }
+        }
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                WeatherScreen()
+            }
+        }
+        item {
+            selectedSailboat?.let {
+                MaintenancePreviewCard(
+                    maintenanceList = maintenanceList,
+                    onAddClick = onAddMaintenance,
+                    onViewAllClick = onViewAllMaintenance,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
-            sailboats.isEmpty() -> {
-                // No sailboats yet
-                SailboatCardWithPlaceholder(
-                    sailboat = sampleSailboat,
-                    modifier = Modifier.padding(top = 16.dp),
-                    onClick = onAddSailboat
-                )
-            }
-
-        }
-
-        // Scrollable weather
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            WeatherScreen()
-        }
-
-        selectedSailboat?.let {
-            MaintenancePreviewCard(
-                maintenanceList = maintenanceList,
-                onAddClick = onAddMaintenance,
-                onViewAllClick = onViewAllMaintenance,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
         }
     }
 }

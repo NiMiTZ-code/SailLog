@@ -93,11 +93,10 @@ fun WeatherScreen(
             }
 
             else -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 16.dp)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    items(viewModel.weatherAlerts) { alert ->
+                    viewModel.weatherAlerts.forEach { alert ->
                         WeatherAlertCard(
                             weatherAlert = alert,
                             onClick = {
@@ -105,19 +104,16 @@ fun WeatherScreen(
                             }
                         )
                     }
-
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        TextButton(
+                            onClick = { viewModel.loadWeatherData() }
                         ) {
-                            TextButton(
-                                onClick = { viewModel.loadWeatherData() }
-                            ) {
-                                Text("Refresh Weather")
-                            }
+                            Text("Refresh Weather")
                         }
                     }
                 }
